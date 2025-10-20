@@ -40,9 +40,14 @@ jobs:
             max-parallel: 1
         steps:
             -   uses: actions/checkout@v4.1.6
+                with:
+                  fetch-depth: 0
             -   name: Set up JDK
                 uses: ./.github/actions/java-setup
                 with:
                     cache: 'maven'
-            -   name: Build with Maven
-                run: mvn --no-transfer-progress verify
+            - name: Build and analyze
+              env:
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+                  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+              run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=roberto-luzardo-sonarsource_WebGoat_6879bc20-c86c-46fd-8f43-387eeae72b6d -Dsonar.projectName='WebGoat' -Dsonar.maven.scanAll=true
